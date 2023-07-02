@@ -11,6 +11,7 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
+
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 st.set_page_config(layout="wide")
@@ -19,13 +20,25 @@ st.title("Text Embeddings Visualization")
 
 uploaded_file = st.file_uploader("Choose a file")
 if uploaded_file:
-    df = pd.read_csv(uploaded_file, delimiter=";")
+    delimiter = st.text_input("Enter the delimiter", ";")
+    drop_na = st.checkbox('Drop rows with N/A values')
+    drop_duplicates = st.checkbox('Drop duplicate rows')
+    df = pd.read_csv(uploaded_file, delimiter=delimiter)
+
+    if drop_na:
+        df = df.dropna()
+
+    if drop_duplicates:
+        df = df.drop_duplicates()
 
     columns = df.columns.tolist()
 
     category_column = st.selectbox('Choose a column for categories:', columns)
     answer_column = st.selectbox('Choose a column for answers:', columns)
     df = df[[category_column, answer_column]]
+
+    if df[category_column].isnull().values.any() or df[answer_column].isnull().values.any():
+        st.write(f"Warning: The selected columns contain NaN values. You might want to handle these before proceeding.")
 
     if st.button('Compute embeddings and plot'):
         categories = sorted(df[category_column].unique())
