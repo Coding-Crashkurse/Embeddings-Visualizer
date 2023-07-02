@@ -50,4 +50,3 @@ You will also need to have the OpenAI API key. If you do not have one, you can r
 ```
 OPENAI_API_KEY=your_openai_api_key
 ```
-"# Embeddings-Inspector" 
