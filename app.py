@@ -11,7 +11,6 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 st.set_page_config(layout="wide")
@@ -35,27 +34,26 @@ if uploaded_file:
 
     category_column = st.selectbox('Choose a column for categories:', columns)
     answer_column = st.selectbox('Choose a column for answers:', columns)
-    df = df[[category_column, answer_column]]
 
-    if df[category_column].isnull().values.any() or df[answer_column].isnull().values.any():
-        st.write(f"Warning: The selected columns contain NaN values. You might want to handle these before proceeding.")
+    df_filtered = df[[category_column, answer_column]].dropna()
+    st.write(f"The DataFrame has {df_filtered.shape[0]} rows after filtering.")
 
     if st.button('Compute embeddings and plot'):
-        categories = sorted(df[category_column].unique())
-        matrix = get_embeddings(df[answer_column].to_list(), engine="text-embedding-ada-002")
+        categories = sorted(df_filtered[category_column].unique())
+        matrix = get_embeddings(df_filtered[answer_column].to_list(), engine="text-embedding-ada-002")
 
         pca = PCA(n_components=3)
         vis_dims = pca.fit_transform(matrix)
-        df["embed_vis"] = vis_dims.tolist()
+        df_filtered["embed_vis"] = vis_dims.tolist()
 
         cmap = px.colors.qualitative.Plotly
         fig = go.Figure()
         for i, cat in enumerate(categories):
-            sub_matrix = np.array(df[df[category_column] == cat]["embed_vis"].to_list())
+            sub_matrix = np.array(df_filtered[df_filtered[category_column] == cat]["embed_vis"].to_list())
             x = sub_matrix[:, 0]
             y = sub_matrix[:, 1]
             z = sub_matrix[:, 2]
-            answers = df[df[category_column] == cat][answer_column].tolist()
+            answers = df_filtered[df_filtered[category_column] == cat][answer_column].tolist()
             color = cmap[i % len(cmap)]
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', marker=dict(color=color, size=6, opacity=0.8),
                                         hovertemplate='%{text}', hoverlabel=dict(font_size=16), text=answers, name=cat))
@@ -65,4 +63,4 @@ if uploaded_file:
 
         col1, col2 = st.columns(2)
         col1.plotly_chart(fig, use_container_width=True)
-        col2.dataframe(df.head(10))
+        col2.dataframe(df_filtered.head(10))
