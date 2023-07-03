@@ -24,6 +24,14 @@ jobs:
       - name: Install project dependencies
         run: poetry install
 
+      - name: Validate secrets
+        run: |
+          echo "Username length: ${#PYPI_USERNAME}"
+          echo "Password length: ${#PYPI_PASSWORD}"
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
       - name: Build and publish
         run: |
           poetry build
