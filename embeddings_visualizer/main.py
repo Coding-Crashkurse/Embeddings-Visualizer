@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from enum import Enum
 
 import typer
 from dotenv import find_dotenv, load_dotenv
@@ -9,18 +10,24 @@ from dotenv import find_dotenv, load_dotenv
 app = typer.Typer()
 
 
+class Provider(str, Enum):
+    OPENAI = "openai"
+    AZURE = "azure"
+
 def is_valid_provider(value: str) -> str:
-    if value not in ["openai", "azure"]:
+    if value not in Provider:
         raise typer.BadParameter("Provider should be either 'openai' or 'azure'.")
     return value
 
 
 @app.command()
-def init(provider: str = typer.Argument(..., callback=is_valid_provider)):
+def init(provider: Provider = typer.Argument(..., callback=is_valid_provider)):
     """
     Initialize the application:
     - Create a .env file with API settings
     - Copy the app.py, embeddings.ipynb, and questions.csv files to the current directory
+
+    The 'provider' argument should be either 'openai' or 'azure'.
     """
     # Part 1: Create .env
     if Path(".env").exists():

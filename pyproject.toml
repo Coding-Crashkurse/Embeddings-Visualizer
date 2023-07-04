@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "embeddings-visualizer"
-version = "0.0.3"
+version = "0.0.4"
 description = ""
 authors = ["markus <datamastery87@gmail.com>"]
 readme = "README.md"
