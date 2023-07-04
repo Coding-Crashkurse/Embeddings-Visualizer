@@ -65,6 +65,10 @@ def start_app():
     Start the app
     """
     load_dotenv(find_dotenv())
+
+    # Debug line: print out the current environment variables
+    typer.echo(f"Current environment variables: {os.environ}")
+
     if "OPENAI_API_KEY" not in os.environ or not os.environ["OPENAI_API_KEY"]:
         typer.echo("Error: No OPENAI_API_KEY found.")
         raise typer.Exit(code=1)
