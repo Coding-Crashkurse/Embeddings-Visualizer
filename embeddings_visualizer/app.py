@@ -9,8 +9,11 @@ from dotenv import find_dotenv, load_dotenv
 from langchain.embeddings import OpenAIEmbeddings
 from openai.embeddings_utils import get_embeddings
 from sklearn.decomposition import PCA
+import openai
 
 load_dotenv(find_dotenv())
+
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 st.set_page_config(layout="wide")
 

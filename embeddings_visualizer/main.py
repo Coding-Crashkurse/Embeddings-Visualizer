@@ -5,7 +5,6 @@ from pathlib import Path
 from enum import Enum
 
 import typer
-from dotenv import find_dotenv, load_dotenv
 
 app = typer.Typer()
 
@@ -13,6 +12,7 @@ app = typer.Typer()
 class Provider(str, Enum):
     OPENAI = "openai"
     AZURE = "azure"
+
 
 def is_valid_provider(value: str) -> str:
     if value not in Provider:
