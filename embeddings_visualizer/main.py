@@ -21,7 +21,7 @@ def is_valid_provider(value: str) -> str:
 
 
 @app.command()
-def init(provider: Provider = typer.Argument(..., callback=is_valid_provider)):
+def init(provider: Provider):
     """
     Initialize the application:
     - Create a .env file with API settings
@@ -34,15 +34,15 @@ def init(provider: Provider = typer.Argument(..., callback=is_valid_provider)):
         typer.echo("Warning: .env file already exists.")
     else:
         with open(".env", "w") as f:
-            if provider == "openai":
+            if provider == Provider.OPENAI:
                 f.write("OPENAI_API_TYPE=openai\n")
                 f.write("OPENAI_API_KEY=\n")
-            elif provider == "azure":
+            elif provider == Provider.AZURE:
                 f.write("OPENAI_API_TYPE=azure\n")
                 f.write("OPENAI_API_BASE=https://<your-endpoint>.openai.azure.com/\n")
                 f.write("OPENAI_API_KEY=<your AzureOpenAI key>\n")
                 f.write("OPENAI_API_VERSION=2023-03-15-preview\n")
-        typer.echo(f".env file with {provider.upper()} API settings created.")
+        typer.echo(f".env file with {provider.value.upper()} API settings created.")
 
     # Part 2: Copy files
     current_dir = Path.cwd()
